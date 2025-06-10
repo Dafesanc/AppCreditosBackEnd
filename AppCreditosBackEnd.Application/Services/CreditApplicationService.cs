@@ -29,7 +29,17 @@ namespace AppCreditosBackEnd.Application.Services
             _evaluationService = evaluationService;
             _mapper = mapper;
         }
-        public async Task<CreditApplicationResponseDto> CreateApplicationAsync(int userId, CreateCreditApplicationDto dto)
+        public async Task<List<CreditApplicationResponseDto>> GetUserApplicationsAsync(Guid userId)
+        {
+            var applications = await _repository.GetByUserIdAsync(userId);
+            return _mapper.Map<List<CreditApplicationResponseDto>>(applications);
+        }
+        public async Task<List<CreditApplicationResponseDto>> GetAllApplicationsAsync(ApplicationStatus? status)
+        {
+            var applications = await _repository.GetAllAsync(status);
+            return _mapper.Map<List<CreditApplicationResponseDto>>(applications);
+        }
+        public async Task<CreditApplicationResponseDto> CreateApplicationAsync(Guid userId, CreateCreditApplicationDto dto)
         {
             var application = new CreditApplication
             {
@@ -60,7 +70,7 @@ namespace AppCreditosBackEnd.Application.Services
             return _mapper.Map<CreditApplicationResponseDto>(created);
         }
 
-        public async Task<CreditApplicationResponseDto> UpdateStatusAsync(int applicationId, UpdateStatusDto dto, int analystId)
+        public async Task<CreditApplicationResponseDto> UpdateStatusAsync(int applicationId, UpdateStatusDto dto, Guid analystId)
         {
             var application = await _repository.GetByIdAsync(applicationId);
             if (application == null)

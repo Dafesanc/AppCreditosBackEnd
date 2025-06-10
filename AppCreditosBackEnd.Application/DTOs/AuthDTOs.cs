@@ -13,6 +13,16 @@ namespace AppCreditosBackEnd.Application.DTOs
     string FirstName,
     string LastName,
     UserRole Role);
+    public record RegisterClientRequestDto(
+       string Email,
+       string Password,
+       string FirstName,
+       string LastName,
+       string IdentificationNumber,
+       string IdentificationType,
+       DateTime BirthDate,
+       int Role = (int)UserRole.Applicant // Removed '?? 1' as it is redundant and causes CS0019
+    );
 
     public record LoginRequestDto(string Email, string Password);
 

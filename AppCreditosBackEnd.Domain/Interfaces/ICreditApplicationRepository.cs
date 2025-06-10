@@ -13,8 +13,7 @@ namespace AppCreditosBackEnd.Domain.Interfaces
         Task<List<CreditApplication>> GetAllAsync(ApplicationStatus? status);
         Task<CreditApplication?> GetByIdAsync(int id);
         Task<CreditApplication> CreateAsync(CreditApplication application);
-        Task<List<CreditApplication>> GetByUserIdAsync(int userId);
-
+        Task<List<CreditApplication>> GetByUserIdAsync(Guid userId);
         Task UpdateAsync(CreditApplication application);
         Task DeleteAsync(int idApplication);
     }

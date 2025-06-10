@@ -12,7 +12,7 @@ namespace AppCreditosBackEnd.Domain.Entities
         public int Id { get; set; }
         public int CreditApplicationId { get; set; }
         public CreditApplication CreditApplication { get; set; }
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public Users User { get; set; }
         public string Action { get; set; }
         public string Details { get; set; }

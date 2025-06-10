@@ -35,7 +35,7 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<CreditApplication>> GetByUserIdAsync(int userId)
+        public async Task<List<CreditApplication>> GetByUserIdAsync(Guid userId)
         {
             return await _context.CreditApplications
                 .Where(x => x.UserId == userId)
