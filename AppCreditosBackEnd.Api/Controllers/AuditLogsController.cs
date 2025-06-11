@@ -1,4 +1,5 @@
 ﻿using AppCreditosBackEnd.Application.DTOs;
+using AppCreditosBackEnd.Application.DTOs.Output;
 using AppCreditosBackEnd.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -268,11 +269,5 @@ namespace AppCreditosBackEnd.Api.Controllers
         }
     }
 
-    // Clase genérica para manejar respuestas de API consistentes
-    public class ApiResponse<T>
-    {
-        public int ErrorCode { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public T? Data { get; set; }
-    }
+    
 }
