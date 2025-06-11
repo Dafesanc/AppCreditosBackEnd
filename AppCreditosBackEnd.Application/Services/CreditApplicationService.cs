@@ -15,17 +15,17 @@ namespace AppCreditosBackEnd.Application.Services
     public class CreditApplicationService : ICreditApplicationService
     {
         private readonly ICreditApplicationRepository _repository;
-        private readonly IAuditLogRepository _auditRepository;
+        private readonly IAuditLogService _auditLogService;
         private readonly ICreditEvaluationService _evaluationService;
         private readonly IMapper _mapper;        
         public CreditApplicationService(
             ICreditApplicationRepository repository,
-            IAuditLogRepository auditRepository,
+            IAuditLogService auditLogService,
             ICreditEvaluationService evaluationService,
             IMapper mapper)
         {
             _repository = repository;
-            _auditRepository = auditRepository;
+            _auditLogService = auditLogService;
             _evaluationService = evaluationService;
             _mapper = mapper;
         }
@@ -53,19 +53,16 @@ namespace AppCreditosBackEnd.Application.Services
             };
 
             // Evaluación automática
-            application.SuggestedStatus = await _evaluationService.EvaluateApplicationAsync(application);
-
+            application.SuggestedStatus = await _evaluationService.EvaluateApplicationAsync(application);            
             var created = await _repository.CreateAsync(application);
 
             // Registro de auditoría
-            await _auditRepository.CreateAsync(new AuditLog
-            {
-                CreditApplicationId = created.Id,
-                UserId = userId,
-                Action = "CREATE",
-                Details = "Credit application created",
-                NewStatus = ApplicationStatus.Pending,
-                Timestamp = DateTime.UtcNow            });
+            await _auditLogService.LogCreditApplicationAction(
+                creditApplicationId: created.Id,
+                userId: userId,
+                action: "CREATE",
+                details: $"Credit application created for ${created.RequestedAmount:C} with term of {created.TermInMonths} months",
+                newStatus: ApplicationStatus.Pending);
 
             return _mapper.Map<CreditApplicationResponseDto>(created);
         }
@@ -81,18 +78,14 @@ namespace AppCreditosBackEnd.Application.Services
             application.Status = dto.Status;
             application.UpdatedAt = DateTime.UtcNow;
 
-            await _repository.UpdateAsync(application);
-
-            // Registro de auditoría
-            await _auditRepository.CreateAsync(new AuditLog
-            {
-                CreditApplicationId = applicationId,
-                UserId = analystId,
-                Action = "STATUS_UPDATE",
-                Details = $"Status changed from {previousStatus} to {dto.Status}",
-                PreviousStatus = previousStatus,
-                NewStatus = dto.Status,
-                Timestamp = DateTime.UtcNow            });
+            await _repository.UpdateAsync(application);            // Registro de auditoría
+            await _auditLogService.LogCreditApplicationAction(
+                creditApplicationId: applicationId,
+                userId: analystId,
+                action: "STATUS_UPDATE",
+                details: $"Status changed from {previousStatus} to {dto.Status} for application amount ${application.RequestedAmount:C}",
+                previousStatus: previousStatus,
+                newStatus: dto.Status);
 
             return _mapper.Map<CreditApplicationResponseDto>(application);
         }

@@ -6,8 +6,7 @@ using AppCreditosBackEnd.Domain.Enums;
 namespace AppCreditosBackEnd.Application.Mappings
 {
     public class MappingProfile : Profile
-    {
-        public MappingProfile()
+    {        public MappingProfile()
         {            // Mapeo de CreditApplication a CreditApplicationResponseDto
             CreateMap<CreditApplication, CreditApplicationResponseDto>()
                 .ForMember(dest => dest.ApplicantName, 
@@ -25,6 +24,25 @@ namespace AppCreditosBackEnd.Application.Mappings
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate))
                 .ForMember(dest => dest.IdentificationType, opt => opt.MapFrom(src => src.IdentificationType))
                 .ForMember(dest => dest.IdentificationNumber, opt => opt.MapFrom(src => src.IdentificationNumber));
+                
+            // Mapeo para la entidad AuditLog
+            CreateMap<AuditLog, AuditLogDto>()
+                .ForMember(dest => dest.RequestedAmount, 
+                    opt => opt.MapFrom(src => src.CreditApplication != null 
+                        ? src.CreditApplication.RequestedAmount 
+                        : 0))
+                .ForMember(dest => dest.UserEmail, 
+                    opt => opt.MapFrom(src => src.User != null 
+                        ? src.User.Email 
+                        : "Unknown"))
+                .ForMember(dest => dest.UserFullName, 
+                    opt => opt.MapFrom(src => src.User != null 
+                        ? $"{src.User.FirstName} {src.User.LastName}".Trim() 
+                        : "Unknown"))
+                .ForMember(dest => dest.UserRole, 
+                    opt => opt.MapFrom(src => src.User != null 
+                        ? src.User.Role 
+                        : UserRole.Applicant));
 
         }
     }

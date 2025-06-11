@@ -1,6 +1,7 @@
 ﻿using AppCreditosBackEnd.Application.DTOs;
 using AppCreditosBackEnd.Application.DTOs.Input;
 using AppCreditosBackEnd.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -19,6 +20,7 @@ namespace AppCreditosBackEnd.Api.Controllers
 
         // GET: api/<UserController>
         [HttpGet("clients")]
+        [Authorize(Roles = "Analyst")]
         public async Task<ActionResult<List<UserDTO>>> GetUsers()
         {
             try
@@ -33,6 +35,8 @@ namespace AppCreditosBackEnd.Api.Controllers
 
         }        // GET api/<UserController>/5
         [HttpGet("clients/{id}")]
+        [Authorize(Roles = "Analyst")]
+
         public async Task<ActionResult<UserDTO>> GetById(Guid id)
         {
             try
@@ -50,6 +54,7 @@ namespace AppCreditosBackEnd.Api.Controllers
             }
         }        // POST api/<UserController>
         [HttpPost("clients")]
+        [Authorize(Roles = "Analyst")]
         public async Task<ActionResult<UserDTO>> CreateUserAsync([FromBody] RegisterClientRequestDto value)
         {
             try
@@ -63,6 +68,7 @@ namespace AppCreditosBackEnd.Api.Controllers
             }
         }        // PUT api/<UserController>/5
         [HttpPut("clients/{id}")]
+        [Authorize(Roles = "Analyst")]
         public async Task<ActionResult<UserDTO>> UpdateUserAsync(Guid userid, [FromBody] UpdateUserDto dto)
         {
             try
@@ -80,6 +86,7 @@ namespace AppCreditosBackEnd.Api.Controllers
             }
         }// DELETE api/<UserController>/5
         [HttpDelete("clients/{id}")]
+        [Authorize(Roles = "Analyst")]
         public async Task<ActionResult> DeleteUserAsync(Guid id)
         {
             try
