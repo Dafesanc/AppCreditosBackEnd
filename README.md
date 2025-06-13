@@ -59,7 +59,7 @@ dotnet ef database update
 dotnet run --project AppCreditosBackEnd.Api
 ```
 
-🎉 **¡Listo!** La API estará disponible en `https://localhost:7000`
+🎉 **¡Listo!** La API estará disponible en `https://localhost:7000` o `https://localhost:7068`
 
 ---
 
@@ -130,13 +130,6 @@ Edita `appsettings.json` en el proyecto **AppCreditosBackEnd.Api**:
 }
 ```
 
-#### Aplicar Migraciones
-```bash
-# Desde la carpeta raíz del proyecto
-dotnet ef migrations add InitialCreate --project AppCreditosBackEnd.Infrastructure --startup-project AppCreditosBackEnd.Api
-
-dotnet ef database update --project AppCreditosBackEnd.Infrastructure --startup-project AppCreditosBackEnd.Api
-```
 
 ### 5️⃣ Ejecutar la Aplicación
 
@@ -144,8 +137,9 @@ dotnet ef database update --project AppCreditosBackEnd.Infrastructure --startup-
 # Opción 1: Desde línea de comandos
 dotnet run --project AppCreditosBackEnd.Api
 
-# Opción 2: Desde Visual Studio
+# Opción 2: Desde Visual Studio 2022
 # Abrir AppCreditosBackEnd.sln y presionar F5
+# Si tu aplicacion no levantan seguramente es porque no tienes configurado AppCreditosBackEnd.sln
 ```
 
 ---
@@ -461,7 +455,6 @@ El sistema utiliza **3 tablas principales**:
 - **CreditApplications**: Solicitudes de crédito
 - **AuditLogs**: Registro de auditoría
 
-Para más detalles, consulta la [documentación del modelo ER](docs/database-model.md).
 
 ---
 
@@ -548,6 +541,7 @@ El proyecto está preparado para deployment en la nube con:
 - **Logging estructurado** para observabilidad
 
 ---
+Si se desea que despliegue este prototipo de app me ayudaria si me dieran plazo hasta el 16/06/2024 para ver mi mejor opción para hacer el despliegue
 
 ## 🤝 Contribución
 
@@ -570,13 +564,13 @@ El proyecto está preparado para deployment en la nube con:
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+Este proyecto no esta protegido por licencia dado que es un modelo que se me pidio desarrollar para una prueba tecnica
 
 ---
 
 ## 👥 Equipo
 
-Desarrollado con ❤️ por el equipo de desarrollo
+Desarrollado con ❤️ por Daniel Sánchez
 
 ---
 
