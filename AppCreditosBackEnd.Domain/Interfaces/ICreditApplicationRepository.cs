@@ -10,7 +10,8 @@ namespace AppCreditosBackEnd.Domain.Interfaces
 {
     public interface ICreditApplicationRepository
     {
-        Task<List<CreditApplication>> GetAllAsync(ApplicationStatus? status);
+        //Task<List<CreditApplication>> GetAllAsync(ApplicationStatus? status);
+        Task<List<CreditApplication>> GetAllAsync();
         Task<CreditApplication?> GetByIdAsync(int id);
         Task<CreditApplication> CreateAsync(CreditApplication application);
         Task<List<CreditApplication>> GetByUserIdAsync(Guid userId);

@@ -43,15 +43,24 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<CreditApplication>> GetAllAsync(ApplicationStatus? status = null)
+        //public async Task<List<CreditApplication>> GetAllAsync(ApplicationStatus? status = null)
+        //{
+        //    var query = _context.CreditApplications
+        //        .Include(x => x.User)
+        //        .AsQueryable();
+
+        //    if (status.HasValue)
+        //        query = query.Where(x => x.Status == status.Value);
+
+        //    return await query
+        //        .OrderByDescending(x => x.CreatedAt)
+        //        .ToListAsync();
+        //}
+        public async Task<List<CreditApplication>> GetAllAsync()
         {
             var query = _context.CreditApplications
                 .Include(x => x.User)
                 .AsQueryable();
-
-            if (status.HasValue)
-                query = query.Where(x => x.Status == status.Value);
-
             return await query
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();

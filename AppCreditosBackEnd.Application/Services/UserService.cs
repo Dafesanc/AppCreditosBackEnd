@@ -46,7 +46,8 @@ namespace AppCreditosBackEnd.Application.Services
             {
                 throw new Exception($"Error creating user: {ex.Message}", ex);
             }
-        }        public async Task DeleteUserAsync(Guid userId)
+        }        
+        public async Task DeleteUserAsync(Guid userId)
         {
             try
             {
@@ -77,7 +78,8 @@ namespace AppCreditosBackEnd.Application.Services
         {
             var Users = await _repository.GetAllAsync();
             return _mapper.Map<List<UserDTO>>(Users);
-        }        public async Task<UserDTO> UpdateUserAsync(Guid userId, UpdateUserDto dto)
+        }        
+        public async Task<UserDTO> UpdateUserAsync(Guid userId, UpdateUserDto dto)
         {
             try
             {
@@ -91,7 +93,7 @@ namespace AppCreditosBackEnd.Application.Services
                 user.IdentificationNumber = dto.IdentificationNumber ?? user.IdentificationNumber;
                 user.BirthDate = dto.BirthDate;
                 user.Role = dto.Role ?? user.Role;
-                user.Password = dto.Password ?? user.Password;
+                //user.Password = dto.Password ?? user.Password;
                 
                 var updatedUser = await _repository.UpdateAsync(user);
                 return _mapper.Map<UserDTO>(updatedUser);

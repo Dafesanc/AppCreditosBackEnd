@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace AppCreditosBackEnd.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // Todos los endpoints de este controlador requieren autenticación
     public class AuditLogsController : ControllerBase
     {
         private readonly IAuditLogService _auditLogService;
@@ -21,14 +21,49 @@ namespace AppCreditosBackEnd.Api.Controllers
         }
 
         /// <summary>
+        /// Verifica si el usuario está autenticado y tiene el rol requerido
+        /// </summary>
+        /// <param name="requiredRole">Rol requerido</param>
+        /// <returns>ObjectResult con error si no está autorizado, null si está autorizado</returns>
+        private ObjectResult? CheckAuthorization(string? requiredRole = null)
+        {
+            // Verificar autenticación
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return StatusCode(401, new ApiResponse<object>
+                {
+                    ErrorCode = 401,
+                    Message = "Usuario no autenticado. Por favor, inicie sesión para acceder a este recurso.",
+                    Data = null
+                });
+            }
+
+            // Verificar rol si se especifica
+            if (!string.IsNullOrEmpty(requiredRole) && !User.IsInRole(requiredRole))
+            {
+                return StatusCode(403, new ApiResponse<object>
+                {
+                    ErrorCode = 403,
+                    Message = $"Este usuario no está autorizado a realizar esta consulta. Se requiere el rol '{requiredRole}'.",
+                    Data = null
+                });
+            }
+
+            return null; // Autorizado
+        }/// <summary>
         /// Obtiene todas las auditorías del sistema
         /// </summary>
         /// <returns>Lista de registros de auditoría o objeto con mensaje si no hay registros</returns>
         [HttpGet]
-        [Authorize(Roles = "Analyst")] // Solo los analistas pueden ver todas las auditorías
         [ProducesResponseType(typeof(ApiResponse<List<AuditLogDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ApiResponse<List<AuditLogDto>>>> GetAllLogs()
         {
+            // Verificar autorización personalizada
+            var authCheck = CheckAuthorization("Analyst");
+            if (authCheck != null) return authCheck;
+
             try
             {
                 var logs = await _auditLogService.GetAllLogsAsync();
@@ -62,18 +97,21 @@ namespace AppCreditosBackEnd.Api.Controllers
                     Data = null
                 });
             }
-        }
-
-        /// <summary>
+        }        /// <summary>
         /// Obtiene las auditorías filtradas por diferentes criterios
         /// </summary>
         /// <param name="filter">Filtros a aplicar</param>
         /// <returns>Lista de registros de auditoría filtrados</returns>
         [HttpGet("filter")]
-        [Authorize(Roles = "Analyst")] // Solo los analistas pueden filtrar auditorías
         [ProducesResponseType(typeof(ApiResponse<List<AuditLogDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ApiResponse<List<AuditLogDto>>>> GetFilteredLogs([FromQuery] AuditLogFilterDto filter)
         {
+            // Verificar autorización personalizada
+            var authCheck = CheckAuthorization("Analyst");
+            if (authCheck != null) return authCheck;
+
             try
             {
                 var logs = await _auditLogService.GetFilteredLogsAsync(filter);
@@ -189,9 +227,7 @@ namespace AppCreditosBackEnd.Api.Controllers
                     Data = null
                 });
             }
-        }
-
-        /// <summary>
+        }        /// <summary>
         /// Obtiene las auditorías paginadas, útil para manejar grandes cantidades de registros
         /// </summary>
         /// <param name="page">Número de página (comienza en 1)</param>
@@ -199,13 +235,18 @@ namespace AppCreditosBackEnd.Api.Controllers
         /// <param name="filter">Filtros opcionales a aplicar</param>
         /// <returns>Lista paginada de registros de auditoría</returns>
         [HttpGet("paginated")]
-        [Authorize(Roles = "Analyst")] // Solo los analistas pueden ver auditorías paginadas
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<AuditLogDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ApiResponse<PaginatedResult<AuditLogDto>>>> GetPaginatedLogs(
             [FromQuery] int page = 1, 
             [FromQuery] int pageSize = 10,
             [FromQuery] AuditLogFilterDto? filter = null)
         {
+            // Verificar autorización personalizada
+            var authCheck = CheckAuthorization("Analyst");
+            if (authCheck != null) return authCheck;
+
             try
             {
                 if (page < 1) page = 1;
@@ -230,21 +271,24 @@ namespace AppCreditosBackEnd.Api.Controllers
                     Data = null
                 });
             }
-        }
-
-        /// <summary>
+        }        /// <summary>
         /// Obtiene estadísticas de auditoría para dashboard
         /// </summary>
         /// <param name="startDate">Fecha de inicio (opcional)</param>
         /// <param name="endDate">Fecha de fin (opcional)</param>
         /// <returns>Estadísticas de los registros de auditoría</returns>
         [HttpGet("statistics")]
-        [Authorize(Roles = "Analyst")] // Solo los analistas pueden ver estadísticas
         [ProducesResponseType(typeof(ApiResponse<AuditLogStatisticsDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ApiResponse<AuditLogStatisticsDto>>> GetStatistics(
             [FromQuery] DateTime? startDate = null, 
             [FromQuery] DateTime? endDate = null)
         {
+            // Verificar autorización personalizada
+            var authCheck = CheckAuthorization("Analyst");
+            if (authCheck != null) return authCheck;
+
             try
             {
                 var statistics = await _auditLogService.GetAuditLogStatisticsAsync(startDate, endDate);

@@ -40,10 +40,9 @@ namespace AppCreditosBackEnd.Api.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Analyst")]
-        public async Task<ActionResult<List<CreditApplicationResponseDto>>> GetAll(
-            [FromQuery] ApplicationStatus? status = null)
+        public async Task<ActionResult<List<CreditApplicationResponseDto>>> GetAll()
         {
-            var result = await _service.GetAllApplicationsAsync(status);
+            var result = await _service.GetAllApplicationsAsync();
             return Ok(result);
         }
 
@@ -56,6 +55,14 @@ namespace AppCreditosBackEnd.Api.Controllers
             var result = await _service.UpdateStatusAsync(id, request, analystId);
             return Ok(result);
         }
+        //[HttpGet]
+        //[Authorize(Roles = "Analyst")]
+        //public async Task<ActionResult<List<CreditApplicationResponseDto>>> GetAll(
+        //    [FromQuery] ApplicationStatus? status = null)
+        //{
+        //    var result = await _service.GetAllApplicationsAsync();
+        //    return Ok(result);
+        //}
 
         //[HttpPut("{id}/status-sp")]
         //[Authorize(Roles = "Analyst")]

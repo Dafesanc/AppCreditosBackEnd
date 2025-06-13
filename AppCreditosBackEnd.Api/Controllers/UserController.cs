@@ -35,8 +35,8 @@ namespace AppCreditosBackEnd.Api.Controllers
 
         }        // GET api/<UserController>/5
         [HttpGet("clients/{id}")]
-        [Authorize(Roles = "Analyst")]
-
+        //[Authorize(Roles = "Analyst")]
+        [Authorize(Roles = "Analyst, Applicant")]
         public async Task<ActionResult<UserDTO>> GetById(Guid id)
         {
             try
@@ -67,7 +67,7 @@ namespace AppCreditosBackEnd.Api.Controllers
                 return StatusCode(500, $"Error creating user: {ex.Message}");
             }
         }        // PUT api/<UserController>/5
-        [HttpPut("clients/{id}")]
+        [HttpPut("clients/{userid}")]
         [Authorize(Roles = "Analyst")]
         public async Task<ActionResult<UserDTO>> UpdateUserAsync(Guid userid, [FromBody] UpdateUserDto dto)
         {

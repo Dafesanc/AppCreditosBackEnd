@@ -34,9 +34,14 @@ namespace AppCreditosBackEnd.Application.Services
             var applications = await _repository.GetByUserIdAsync(userId);
             return _mapper.Map<List<CreditApplicationResponseDto>>(applications);
         }
-        public async Task<List<CreditApplicationResponseDto>> GetAllApplicationsAsync(ApplicationStatus? status)
+        //public async Task<List<CreditApplicationResponseDto>> GetAllApplicationsAsync(ApplicationStatus? status)
+        //{
+        //    var applications = await _repository.GetAllAsync(status);
+        //    return _mapper.Map<List<CreditApplicationResponseDto>>(applications);
+        //}
+        public async Task<List<CreditApplicationResponseDto>> GetAllApplicationsAsync()
         {
-            var applications = await _repository.GetAllAsync(status);
+            var applications = await _repository.GetAllAsync();
             return _mapper.Map<List<CreditApplicationResponseDto>>(applications);
         }
         public async Task<CreditApplicationResponseDto> CreateApplicationAsync(Guid userId, CreateCreditApplicationDto dto)

@@ -41,20 +41,19 @@ namespace AppCreditosBackEnd.Application.DTOs
         int TermInMonths,
         decimal MonthlyIncome,
         int WorkExperienceYears
-    );
-
-    public record CreditApplicationResponseDto(
-        int Id,
-        decimal RequestedAmount,
-        int TermInMonths,
-        decimal MonthlyIncome,
-        int WorkExperienceYears,
-        ApplicationStatus Status,
-        ApplicationStatus? SuggestedStatus,
-        DateTime CreatedAt,
-        DateTime? UpdatedAt,
-        string ApplicantName
-    );
+    );    public record CreditApplicationResponseDto
+    {
+        public int Id { get; set; }
+        public decimal RequestedAmount { get; set; }
+        public int TermInMonths { get; set; }
+        public decimal MonthlyIncome { get; set; }
+        public int WorkExperienceYears { get; set; }
+        public ApplicationStatus Status { get; set; }
+        public ApplicationStatus? SuggestedStatus { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public string ApplicantName { get; set; } = string.Empty;
+    };
 
     public record UpdateStatusDto(ApplicationStatus Status);
 }

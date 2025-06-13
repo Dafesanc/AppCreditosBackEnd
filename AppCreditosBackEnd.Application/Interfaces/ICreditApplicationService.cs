@@ -13,6 +13,8 @@ namespace AppCreditosBackEnd.Application.Interfaces
         Task<CreditApplicationResponseDto> UpdateStatusAsync(int applicationId, UpdateStatusDto dto, Guid analystId);
         Task<CreditApplicationResponseDto> CreateApplicationAsync(Guid userId, CreateCreditApplicationDto dto);
         Task<List<CreditApplicationResponseDto>> GetUserApplicationsAsync(Guid userId);
-        Task<List<CreditApplicationResponseDto>> GetAllApplicationsAsync(ApplicationStatus? status = null);
+        //Task<List<CreditApplicationResponseDto>> GetAllApplicationsAsync(ApplicationStatus? status = null);
+        Task<List<CreditApplicationResponseDto>> GetAllApplicationsAsync();
+
     }
 }
