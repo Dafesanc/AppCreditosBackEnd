@@ -129,7 +129,9 @@ Edita `appsettings.json` en el proyecto **AppCreditosBackEnd.Api**:
   }
 }
 ```
+##RECUERDA QUE NECESITAS PONER EL TIPO DE CADENA DE CONEXION DE ACUERDO A LAS CONFIGURACIONES DE LAS BASES DE DATOS QUE HAGAS, MI CADENA DE CONEXION ORIGINAL ESTA DEFINIDA PARA UNA AUNTENTICACION DE TIPO MIXED MODE(SQL CONNECTION) ASI QUE PUEDES TOMAR ESA DE BASE SI EJECUTAS LOS QUERY QUE YO HE DEFINIDO EN EL ARCHIVO QUE ADJUNTARE, LO UNICO QUE TENDRIAS QUE CAMBIAR ES EL NOMBRE DEL SERVER AL QUE TU TENGAS POR DEFECTO EN TU MAQUINA LOCAL
 
+[VER HOJA CON QUERYS](https://drive.google.com/drive/folders/1ntHn_5vnf6bDgPQHv8mUmPP78LCLK1p2?usp=sharing)
 
 ### 5️⃣ Ejecutar la Aplicación
 
@@ -139,7 +141,7 @@ dotnet run --project AppCreditosBackEnd.Api
 
 # Opción 2: Desde Visual Studio 2022
 # Abrir AppCreditosBackEnd.sln y presionar F5
-# Si tu aplicacion no levantan seguramente es porque no tienes configurado AppCreditosBackEnd.sln
+# Si tu aplicacion no levantan seguramente es porque no tienes configurado AppCreditosBackEnd.Api como proyecto de inicio
 ```
 
 ---
@@ -577,7 +579,7 @@ Desarrollado con ❤️ por Daniel Sánchez
 <div align="center">
 
 **¿Preguntas o sugerencias?**  
-[Crear un Issue](../../issues) • [Contactar al equipo](mailto:tu-email@ejemplo.com)
+[Crear un Issue](../../issues) • [Contactar al equipo](mailto:dafesanc12@gmail.com)
 
 ---
 
