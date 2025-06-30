@@ -18,7 +18,7 @@ docker rm $CONTAINER_NAME 2>$null
 
 # Build de la imagen
 Write-Host "🔨 Construyendo imagen Docker..." -ForegroundColor Blue
-docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
+docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" . --no-cache
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Error en el build de Docker" -ForegroundColor Red
