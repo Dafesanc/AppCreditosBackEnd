@@ -1,0 +1,114 @@
+# =============================================================================
+# render.yaml - Configuración para despliegue en Render.com
+# AppCreditosBackEnd API
+# =============================================================================
+
+services:
+  # -----------------------------------------------------------------------------
+  # API Web Service
+  # -----------------------------------------------------------------------------
+  - type: web
+    name: appcreditos-backend-api
+    runtime: docker
+    repo: https://github.com/tu-usuario/tu-repositorio.git # Cambiar por tu repo
+    region: oregon # Cambiar por la región deseada (oregon, frankfurt, singapore)
+    branch: main # o master, según tu rama principal
+    
+    # Configuración del contenedor
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    
+    # Configuración del servicio
+    plan: starter # starter, standard, pro, pro plus
+    
+    # Variables de entorno para producción
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: appcreditos-database
+          property: connectionString
+      
+      # JWT Settings - Usar secretos de Render
+      - key: JwtSettings__Secret
+        generateValue: true # Render generará un valor seguro
+      
+      - key: JwtSettings__Issuer
+        value: CreditPlatformAPI-Production
+      
+      - key: JwtSettings__Audience
+        value: CreditPlatformUsers-Production
+      
+      - key: JwtSettings__ExpiresInMinutes
+        value: "30"
+      
+      # Configuración de logging
+      - key: Logging__LogLevel__Default
+        value: Information
+      
+      - key: Logging__LogLevel__Microsoft.AspNetCore
+        value: Warning
+      
+      # Configuración adicional
+      - key: AllowedHosts
+        value: "*"
+      
+      # CORS Origins (actualizar con tu dominio de frontend)
+      - key: CorsSettings__AllowedOrigins
+        value: "https://tu-frontend-domain.onrender.com,https://localhost:4200"
+    
+    # Health check
+    healthCheckPath: /health
+    
+    # Configuración de auto-deploy
+    autoDeploy: true
+    
+    # Configuración de build
+    buildFilter:
+      paths:
+        - "**/*"
+      ignoredPaths:
+        - "docs/**"
+        - "*.md"
+        - ".github/**"
+
+# -----------------------------------------------------------------------------
+# Base de datos (PostgreSQL) - Opcional si quieres migrar de SQL Server
+# -----------------------------------------------------------------------------
+# databases:
+#   - name: appcreditos-database
+#     databaseName: appcreditos_production
+#     user: appcreditos_user
+#     region: oregon
+#     plan: starter # starter, standard, pro
+#     
+#     # Configuración de backup automático
+#     ipAllowList: [] # Vacío = permite conexiones desde cualquier IP de Render
+
+# -----------------------------------------------------------------------------
+# Variables de entorno globales (opcional)
+# -----------------------------------------------------------------------------
+# envVarGroups:
+#   - name: shared-config
+#     envVars:
+#       - key: SHARED_SECRET
+#         generateValue: true
+#       - key: API_VERSION
+#         value: "v1"
+
+# -----------------------------------------------------------------------------
+# Notificaciones (opcional)
+# -----------------------------------------------------------------------------
+# notifications:
+#   - type: slack
+#     name: deployment-notifications
+#     url: https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+#     events:
+#       - deploy-started
+#       - deploy-succeeded
+#       - deploy-failed

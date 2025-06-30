@@ -1,0 +1,183 @@
+# =============================================================================
+# .dockerignore para AppCreditosBackEnd
+# Excluye archivos innecesarios para reducir el tamaño del contexto de build
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Archivos del sistema operativo
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# -----------------------------------------------------------------------------
+# Directorios de build y output
+# -----------------------------------------------------------------------------
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+**/PublishProfiles/
+
+# -----------------------------------------------------------------------------
+# Archivos de Visual Studio y desarrollo
+# -----------------------------------------------------------------------------
+*.user
+*.suo
+*.cache
+*.docstates
+*.sln.docstates
+*.userprefs
+*.pidb
+*.booproj
+*.swp
+*~
+*.tmp
+*.orig
+*.bak
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.publishsettings
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+*.apk
+*.ipa
+
+# Directorios de Visual Studio
+.vs/
+.vscode/
+.idea/
+*.sln.ide/
+
+# -----------------------------------------------------------------------------
+# Archivos de configuración local y secretos
+# -----------------------------------------------------------------------------
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Archivos de certificados y llaves
+*.p12
+*.pfx
+*.key
+*.pem
+*.crt
+
+# -----------------------------------------------------------------------------
+# Archivos de Git
+# -----------------------------------------------------------------------------
+.git/
+.gitignore
+.gitattributes
+*.gitkeep
+
+# -----------------------------------------------------------------------------
+# Archivos de documentación y metadata
+# -----------------------------------------------------------------------------
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+docs/
+documentation/
+
+# -----------------------------------------------------------------------------
+# Archivos de Docker
+# -----------------------------------------------------------------------------
+Dockerfile*
+.dockerignore
+docker-compose*
+*.dockerfile
+
+# -----------------------------------------------------------------------------
+# Archivos de CI/CD y deployment
+# -----------------------------------------------------------------------------
+.github/
+.gitlab-ci.yml
+azure-pipelines.yml
+Jenkinsfile
+render.yaml
+deployment/
+scripts/
+terraform/
+k8s/
+helm/
+
+# -----------------------------------------------------------------------------
+# Archivos de pruebas
+# -----------------------------------------------------------------------------
+tests/
+**/*Test*/
+**/*Tests*/
+**/*.Test/
+**/*.Tests/
+coverage/
+TestCoverage/
+*.trx
+*.coverage
+*.coveragexml
+
+# -----------------------------------------------------------------------------
+# Archivos de dependencias y package managers
+# -----------------------------------------------------------------------------
+node_modules/
+packages/
+.nuget/
+paket-files/
+
+# -----------------------------------------------------------------------------
+# Archivos temporales y logs
+# -----------------------------------------------------------------------------
+*.log
+*.temp
+*.tmp
+logs/
+temp/
+AppData/
+
+# -----------------------------------------------------------------------------
+# Archivos de base de datos locales
+# -----------------------------------------------------------------------------
+*.mdf
+*.ldf
+*.sqlite
+*.db
+*.db3
+LocalDB/
+
+# -----------------------------------------------------------------------------
+# Herramientas y utilidades
+# -----------------------------------------------------------------------------
+tools/
+.tools/
+packages.config
+.sass-cache/
+typings/
+
+# -----------------------------------------------------------------------------
+# Archivos específicos del proyecto que no son necesarios
+# -----------------------------------------------------------------------------
+*.http
+*.rest
+postman/
+insomnia/
+swagger/
+openapi/
+
+# Archivos de migración temporal (si los tienes)
+migrations-backup/
+migration-scripts/
