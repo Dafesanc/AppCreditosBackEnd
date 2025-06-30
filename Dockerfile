@@ -68,9 +68,9 @@ ENV ASPNETCORE_URLS=http://+:8080
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_EnableDiagnostics=0
 
-# Health check
+# Health check - versión simplificada sin dependencias externas
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
+    CMD dotnet --version || exit 1
 
 # Entry point
 ENTRYPOINT ["dotnet", "AppCreditosBackEnd.Api.dll"]

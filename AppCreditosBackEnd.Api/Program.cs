@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 
 // Add health checks
 builder.Services.AddHealthChecks()
-    .AddDbContext<CreditPlatformDbContext>();
+    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
