@@ -154,11 +154,46 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 
 app.MapControllers();
-// Database migration
+
+// Database initialization with retry logic
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CreditPlatformDbContext>();
-    context.Database.EnsureCreated();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    var maxRetries = 5;
+    var delay = TimeSpan.FromSeconds(5);
+    
+    for (int i = 0; i < maxRetries; i++)
+    {
+        try
+        {
+            logger.LogInformation("Attempting to connect to database... (attempt {Attempt}/{MaxRetries})", i + 1, maxRetries);
+            
+            // Test the connection first
+            await context.Database.CanConnectAsync();
+            
+            // Ensure database is created
+            context.Database.EnsureCreated();
+            
+            logger.LogInformation("Database connection successful!");
+            break;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Database connection attempt {Attempt} failed: {Message}", i + 1, ex.Message);
+            
+            if (i == maxRetries - 1)
+            {
+                logger.LogError(ex, "Failed to connect to database after {MaxRetries} attempts. Starting application anyway...", maxRetries);
+                // Don't throw - let the app start even if DB connection fails initially
+                break;
+            }
+            
+            logger.LogInformation("Retrying in {Delay} seconds...", delay.TotalSeconds);
+            await Task.Delay(delay);
+        }
+    }
 }
 
 app.Run();
