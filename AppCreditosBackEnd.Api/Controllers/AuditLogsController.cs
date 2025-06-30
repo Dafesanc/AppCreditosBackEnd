@@ -1,6 +1,7 @@
 ﻿using AppCreditosBackEnd.Application.DTOs;
 using AppCreditosBackEnd.Application.DTOs.Output;
 using AppCreditosBackEnd.Application.Interfaces;
+using AppCreditosBackEnd.Api.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -100,13 +101,14 @@ namespace AppCreditosBackEnd.Api.Controllers
         }        /// <summary>
         /// Obtiene las auditorías filtradas por diferentes criterios
         /// </summary>
-        /// <param name="filter">Filtros a aplicar</param>
+        /// <param name="filter">Filtros a aplicar (fechas como string)</param>
         /// <returns>Lista de registros de auditoría filtrados</returns>
         [HttpGet("filter")]
         [ProducesResponseType(typeof(ApiResponse<List<AuditLogDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<ApiResponse<List<AuditLogDto>>>> GetFilteredLogs([FromQuery] AuditLogFilterDto filter)
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ApiResponse<List<AuditLogDto>>>> GetFilteredLogs([FromQuery] AuditLogFilterStringDto filter)
         {
             // Verificar autorización personalizada
             var authCheck = CheckAuthorization("Analyst");
@@ -114,7 +116,29 @@ namespace AppCreditosBackEnd.Api.Controllers
 
             try
             {
-                var logs = await _auditLogService.GetFilteredLogsAsync(filter);
+                // Convertir fechas string a DateTime
+                var (startDate, endDate, dateError) = DateTimeHelper.ParseDateRange(filter.StartDate, filter.EndDate);
+                
+                if (!string.IsNullOrEmpty(dateError))
+                {
+                    return BadRequest(new ApiResponse<List<AuditLogDto>>
+                    {
+                        ErrorCode = 400,
+                        Message = dateError,
+                        Data = null
+                    });
+                }
+
+                // Crear el filtro con DateTime
+                var dateTimeFilter = new AuditLogFilterDto(
+                    filter.CreditApplicationId,
+                    filter.UserId,
+                    filter.Action,
+                    startDate,
+                    endDate
+                );
+
+                var logs = await _auditLogService.GetFilteredLogsAsync(dateTimeFilter);
                 
                 if (logs == null || !logs.Any())
                 {
@@ -232,16 +256,17 @@ namespace AppCreditosBackEnd.Api.Controllers
         /// </summary>
         /// <param name="page">Número de página (comienza en 1)</param>
         /// <param name="pageSize">Tamaño de página</param>
-        /// <param name="filter">Filtros opcionales a aplicar</param>
+        /// <param name="filter">Filtros opcionales a aplicar (fechas como string)</param>
         /// <returns>Lista paginada de registros de auditoría</returns>
         [HttpGet("paginated")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<AuditLogDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ApiResponse<PaginatedResult<AuditLogDto>>>> GetPaginatedLogs(
             [FromQuery] int page = 1, 
             [FromQuery] int pageSize = 10,
-            [FromQuery] AuditLogFilterDto? filter = null)
+            [FromQuery] AuditLogFilterStringDto? filter = null)
         {
             // Verificar autorización personalizada
             var authCheck = CheckAuthorization("Analyst");
@@ -251,8 +276,34 @@ namespace AppCreditosBackEnd.Api.Controllers
             {
                 if (page < 1) page = 1;
                 if (pageSize < 1 || pageSize > 100) pageSize = 10;
+
+                AuditLogFilterDto? dateTimeFilter = null;
                 
-                var paginatedLogs = await _auditLogService.GetPaginatedLogsAsync(page, pageSize, filter);
+                // Solo convertir fechas si hay filtros
+                if (filter != null)
+                {
+                    var (startDate, endDate, dateError) = DateTimeHelper.ParseDateRange(filter.StartDate, filter.EndDate);
+                    
+                    if (!string.IsNullOrEmpty(dateError))
+                    {
+                        return BadRequest(new ApiResponse<PaginatedResult<AuditLogDto>>
+                        {
+                            ErrorCode = 400,
+                            Message = dateError,
+                            Data = null
+                        });
+                    }
+
+                    dateTimeFilter = new AuditLogFilterDto(
+                        filter.CreditApplicationId,
+                        filter.UserId,
+                        filter.Action,
+                        startDate,
+                        endDate
+                    );
+                }
+                
+                var paginatedLogs = await _auditLogService.GetPaginatedLogsAsync(page, pageSize, dateTimeFilter);
                 
                 return Ok(new ApiResponse<PaginatedResult<AuditLogDto>>
                 {
@@ -274,16 +325,17 @@ namespace AppCreditosBackEnd.Api.Controllers
         }        /// <summary>
         /// Obtiene estadísticas de auditoría para dashboard
         /// </summary>
-        /// <param name="startDate">Fecha de inicio (opcional)</param>
-        /// <param name="endDate">Fecha de fin (opcional)</param>
+        /// <param name="startDate">Fecha de inicio en formato string (ej: 2024-01-15)</param>
+        /// <param name="endDate">Fecha de fin en formato string (ej: 2024-01-31)</param>
         /// <returns>Estadísticas de los registros de auditoría</returns>
         [HttpGet("statistics")]
         [ProducesResponseType(typeof(ApiResponse<AuditLogStatisticsDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ApiResponse<AuditLogStatisticsDto>>> GetStatistics(
-            [FromQuery] DateTime? startDate = null, 
-            [FromQuery] DateTime? endDate = null)
+            [FromQuery] string? startDate = null, 
+            [FromQuery] string? endDate = null)
         {
             // Verificar autorización personalizada
             var authCheck = CheckAuthorization("Analyst");
@@ -291,7 +343,20 @@ namespace AppCreditosBackEnd.Api.Controllers
 
             try
             {
-                var statistics = await _auditLogService.GetAuditLogStatisticsAsync(startDate, endDate);
+                // Convertir fechas string a DateTime
+                var (parsedStartDate, parsedEndDate, dateError) = DateTimeHelper.ParseDateRange(startDate, endDate);
+                
+                if (!string.IsNullOrEmpty(dateError))
+                {
+                    return BadRequest(new ApiResponse<AuditLogStatisticsDto>
+                    {
+                        ErrorCode = 400,
+                        Message = dateError,
+                        Data = null
+                    });
+                }
+
+                var statistics = await _auditLogService.GetAuditLogStatisticsAsync(parsedStartDate, parsedEndDate);
                 
                 return Ok(new ApiResponse<AuditLogStatisticsDto>
                 {

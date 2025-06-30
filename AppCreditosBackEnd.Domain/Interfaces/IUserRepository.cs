@@ -15,6 +15,7 @@ namespace AppCreditosBackEnd.Domain.Interfaces
         Task<Users> UpdateAsync(Users user);
         Task DeleteAsync(Guid userId);
         Task<Users> GetByEmailAsync(string email);
+        Task<bool> ExistsAsync(Guid userId);
 
     }
 }

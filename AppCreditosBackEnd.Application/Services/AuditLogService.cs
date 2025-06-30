@@ -36,8 +36,8 @@ namespace AppCreditosBackEnd.Application.Services
             Guid userId,
             string action,
             string details,
-            ApplicationStatus? previousStatus = null,
-            ApplicationStatus? newStatus = null)
+            int? previousStatus = null,
+            int? newStatus = null)
         {
             // Crear el registro de auditoría
             var auditLog = new AuditLog
@@ -101,34 +101,61 @@ namespace AppCreditosBackEnd.Application.Services
             return await MapLogsToDto(logs);
         }        private async Task<List<AuditLogDto>> MapLogsToDto(List<AuditLog> logs)
         {
-            // Usamos AutoMapper para simplificar el mapeo y aseguramos cargar relaciones
             var dtoList = new List<AuditLogDto>();
             
             foreach (var log in logs)
             {
-                // Aseguramos que las propiedades de navegación estén cargadas
-                if (log.CreditApplication == null && log.CreditApplicationId > 0)
+                // Crear el DTO básico desde el AuditLog
+                var dto = new AuditLogDto
                 {
-                    // Intentamos cargar la aplicación si no está ya cargada
+                    Id = log.Id,
+                    CreditApplicationId = log.CreditApplicationId,
+                    UserId = log.UserId,
+                    Action = log.Action,
+                    Details = log.Details,
+                    PreviousStatus = log.PreviousStatus,
+                    NewStatus = log.NewStatus,
+                    Timestamp = log.Timestamp
+                };
+                
+                // Cargar datos relacionados manualmente para el DTO
+                try
+                {
                     var application = await _creditApplicationRepository.GetByIdAsync(log.CreditApplicationId);
                     if (application != null)
                     {
-                        log.CreditApplication = application;
+                        dto.RequestedAmount = application.RequestedAmount;
                     }
                 }
-                
-                if (log.User == null && log.UserId != Guid.Empty)
+                catch
                 {
-                    // Intentamos cargar el usuario si no está ya cargado
+                    dto.RequestedAmount = 0;
+                }
+                
+                try
+                {
                     var user = await _userRepository.GetByIdAsync(log.UserId);
                     if (user != null)
                     {
-                        log.User = user;
+                        dto.UserEmail = user.Email;
+                        dto.UserFullName = $"{user.FirstName} {user.LastName}".Trim();
+                        dto.UserRole = user.Role;
+                    }
+                    else
+                    {
+                        dto.UserEmail = "Unknown";
+                        dto.UserFullName = "Unknown";
+                        dto.UserRole = UserRole.Applicant;
                     }
                 }
+                catch
+                {
+                    dto.UserEmail = "Unknown";
+                    dto.UserFullName = "Unknown";
+                    dto.UserRole = UserRole.Applicant;
+                }
                 
-                // Mapear usando AutoMapper una vez que las relaciones están cargadas
-                dtoList.Add(_mapper.Map<AuditLogDto>(log));
+                dtoList.Add(dto);
             }
             
             return dtoList;
@@ -149,7 +176,7 @@ namespace AppCreditosBackEnd.Application.Services
                     pageSize,
                     filter.CreditApplicationId,
                     filter.UserId,
-                    filter.Action,
+                    filter.Action ?? string.Empty,
                     filter.StartDate,
                     filter.EndDate);
             }
@@ -205,24 +232,31 @@ namespace AppCreditosBackEnd.Application.Services
                 .Select(g => new 
                 { 
                     UserId = g.Key, 
-                    ActionCount = g.Count(),
-                    User = g.FirstOrDefault()?.User
+                    ActionCount = g.Count()
                 })
                 .OrderByDescending(x => x.ActionCount)
                 .Take(5);
                 
             foreach (var userGroup in userGroups)
             {
-                if (userGroup.User != null)
+                try
                 {
-                    statistics.TopActiveUsers.Add(new UserActivityDto
+                    var user = await _userRepository.GetByIdAsync(userGroup.UserId);
+                    if (user != null)
                     {
-                        UserId = userGroup.UserId,
-                        UserEmail = userGroup.User.Email,
-                        UserFullName = $"{userGroup.User.FirstName} {userGroup.User.LastName}".Trim(),
-                        UserRole = userGroup.User.Role,
-                        ActionCount = userGroup.ActionCount
-                    });
+                        statistics.TopActiveUsers.Add(new UserActivityDto
+                        {
+                            UserId = userGroup.UserId,
+                            UserEmail = user.Email,
+                            UserFullName = $"{user.FirstName} {user.LastName}".Trim(),
+                            UserRole = user.Role,
+                            ActionCount = userGroup.ActionCount
+                        });
+                    }
+                }
+                catch
+                {
+                    // Ignorar usuarios que no se pueden cargar
                 }
             }
             

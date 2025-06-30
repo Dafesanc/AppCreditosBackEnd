@@ -67,7 +67,7 @@ namespace AppCreditosBackEnd.Application.Services
                 userId: userId,
                 action: "CREATE",
                 details: $"Credit application created for ${created.RequestedAmount:C} with term of {created.TermInMonths} months",
-                newStatus: ApplicationStatus.Pending);
+                newStatus: (int)ApplicationStatus.Pending);
 
             return _mapper.Map<CreditApplicationResponseDto>(created);
         }
@@ -89,8 +89,8 @@ namespace AppCreditosBackEnd.Application.Services
                 userId: analystId,
                 action: "STATUS_UPDATE",
                 details: $"Status changed from {previousStatus} to {dto.Status} for application amount ${application.RequestedAmount:C}",
-                previousStatus: previousStatus,
-                newStatus: dto.Status);
+                previousStatus: (int)previousStatus,
+                newStatus: (int)dto.Status);
 
             return _mapper.Map<CreditApplicationResponseDto>(application);
         }

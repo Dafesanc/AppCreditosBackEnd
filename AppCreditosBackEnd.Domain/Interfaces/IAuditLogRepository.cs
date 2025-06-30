@@ -23,7 +23,7 @@ namespace AppCreditosBackEnd.Domain.Interfaces
             int page, int pageSize, 
             int? creditApplicationId = null, 
             Guid? userId = null,
-            string action = null,
+            string? action = null,
             DateTime? startDate = null,
             DateTime? endDate = null);
     }
