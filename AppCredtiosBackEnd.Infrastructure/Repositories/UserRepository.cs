@@ -261,5 +261,10 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
                 }
             }
         }
+
+        public async Task<bool> ExistsAsync(Guid userId)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == userId);
+        }
     }
 }

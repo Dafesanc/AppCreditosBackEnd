@@ -7,20 +7,36 @@ using AppCreditosBackEnd.Domain.Enums;
 
 namespace AppCreditosBackEnd.Application.DTOs
 {
-    public record AuditLogDto(
-        int Id,
-        int CreditApplicationId,
-        decimal RequestedAmount,
-        Guid UserId,
-        string UserEmail,
-        string UserFullName,
-        UserRole UserRole,
-        string Action,
-        string Details,
-        ApplicationStatus? PreviousStatus,
-        ApplicationStatus? NewStatus,
-        DateTime Timestamp
-    );
+    public class AuditLogDto
+    {
+        public int Id { get; set; }
+        public int CreditApplicationId { get; set; }
+        public decimal RequestedAmount { get; set; }
+        public Guid UserId { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
+        public string UserFullName { get; set; } = string.Empty;
+        public UserRole UserRole { get; set; }
+        public string Action { get; set; } = string.Empty;
+        public string Details { get; set; } = string.Empty;
+        public int? PreviousStatus { get; set; } // Cambiado de ApplicationStatus a int
+        public int? NewStatus { get; set; } // Cambiado de ApplicationStatus a int
+        public DateTime Timestamp { get; set; }
+        
+        // Propiedades adicionales para mostrar el texto del status
+        public string PreviousStatusText => GetStatusText(PreviousStatus);
+        public string NewStatusText => GetStatusText(NewStatus);
+        
+        private static string GetStatusText(int? status)
+        {
+            return status switch
+            {
+                1 => "Pending",
+                2 => "Approved", 
+                3 => "Rejected",
+                _ => "Unknown"
+            };
+        }
+    }
     
     public record AuditLogFilterDto(
         int? CreditApplicationId,
@@ -28,6 +44,17 @@ namespace AppCreditosBackEnd.Application.DTOs
         string? Action,
         DateTime? StartDate,
         DateTime? EndDate
+    );
+
+    /// <summary>
+    /// DTO para filtros con fechas como string (para el frontend)
+    /// </summary>
+    public record AuditLogFilterStringDto(
+        int? CreditApplicationId,
+        Guid? UserId,
+        string? Action,
+        string? StartDate,
+        string? EndDate
     );
 
     /// <summary>
@@ -109,8 +136,8 @@ namespace AppCreditosBackEnd.Application.DTOs
     public class UserActivityDto
     {
         public Guid UserId { get; set; }
-        public string UserEmail { get; set; }
-        public string UserFullName { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
+        public string UserFullName { get; set; } = string.Empty;
         public UserRole UserRole { get; set; }
         public int ActionCount { get; set; }
     }

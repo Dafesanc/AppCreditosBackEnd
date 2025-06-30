@@ -102,11 +102,25 @@ builder.Services.AddScoped<IUserRepository>(sp => {
     return new AppCreditosBackEnd.Infrastructure.Repositories.UserRepository(context);
 });
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+// Nuevos repositorios bancarios
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IEmployerRepository, EmployerRepository>();
+builder.Services.AddScoped<ICardApplicationRepository, CardApplicationRepository>();
+builder.Services.AddScoped<ICardRepository, CardRepository>();
+
+// Servicios existentes
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICreditApplicationService, CreditApplicationService>();
 builder.Services.AddScoped<ICreditEvaluationService, CreditEvaluationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+// Nuevos servicios bancarios
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IEmployerService, EmployerService>();
+builder.Services.AddScoped<IBankingCardApplicationService, CardApplicationService>();
+builder.Services.AddScoped<ICardService, CardService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

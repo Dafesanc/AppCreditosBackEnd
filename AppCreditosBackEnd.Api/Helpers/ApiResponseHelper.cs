@@ -1,5 +1,6 @@
 using AppCreditosBackEnd.Application.DTOs.Output;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace AppCreditosBackEnd.Api.Helpers
 {
@@ -62,6 +63,42 @@ namespace AppCreditosBackEnd.Api.Helpers
         }
 
         /// <summary>
+        /// Crea una respuesta exitosa con formato consistente y código de estado personalizado
+        /// </summary>
+        /// <typeparam name="T">Tipo de datos de la respuesta</typeparam>
+        /// <param name="data">Datos a incluir en la respuesta</param>
+        /// <param name="message">Mensaje de éxito</param>
+        /// <param name="statusCode">Código de estado HTTP</param>
+        /// <returns>ObjectResult con el formato ApiResponse</returns>
+        public static ObjectResult CreateSuccessResponse<T>(T data, string message, int statusCode)
+        {
+            return new ObjectResult(new ApiResponse<T>
+            {
+                ErrorCode = statusCode,
+                Message = message,
+                Data = data
+            })
+            {
+                StatusCode = statusCode
+            };
+        }
+
+        /// <summary>
+        /// Crea una respuesta exitosa sin datos con formato consistente
+        /// </summary>
+        /// <param name="message">Mensaje de éxito</param>
+        /// <returns>OkObjectResult con el formato ApiResponse</returns>
+        public static OkObjectResult CreateSuccessResponse(string message = "Operación realizada exitosamente")
+        {
+            return new OkObjectResult(new ApiResponse<object>
+            {
+                ErrorCode = 200,
+                Message = message,
+                Data = null
+            });
+        }
+
+        /// <summary>
         /// Crea una respuesta de error genérica con formato consistente
         /// </summary>
         /// <param name="statusCode">Código de estado HTTP</param>
@@ -78,6 +115,69 @@ namespace AppCreditosBackEnd.Api.Helpers
             {
                 StatusCode = statusCode
             };
+        }
+
+        /// <summary>
+        /// Crea una respuesta de error genérica con código 500 por defecto
+        /// </summary>
+        /// <param name="message">Mensaje de error</param>
+        /// <returns>ObjectResult con el formato ApiResponse</returns>
+        public static ObjectResult CreateErrorResponse(string message)
+        {
+            return CreateErrorResponse(500, message);
+        }
+
+        /// <summary>
+        /// Crea una respuesta de no encontrado (404) con formato consistente
+        /// </summary>
+        /// <param name="message">Mensaje personalizado</param>
+        /// <returns>NotFoundObjectResult con el formato ApiResponse</returns>
+        public static NotFoundObjectResult CreateNotFoundResponse(string message = "Recurso no encontrado")
+        {
+            return new NotFoundObjectResult(new ApiResponse<object>
+            {
+                ErrorCode = 404,
+                Message = message,
+                Data = null
+            });
+        }
+
+        /// <summary>
+        /// Crea una respuesta de error de validación (400) con formato consistente
+        /// </summary>
+        /// <param name="message">Mensaje de error de validación</param>
+        /// <returns>BadRequestObjectResult con el formato ApiResponse</returns>
+        public static BadRequestObjectResult CreateValidationErrorResponse(string message = "Datos de entrada inválidos")
+        {
+            return new BadRequestObjectResult(new ApiResponse<object>
+            {
+                ErrorCode = 400,
+                Message = message,
+                Data = null
+            });
+        }
+
+        /// <summary>
+        /// Crea una respuesta de error de validación (400) con ModelState
+        /// </summary>
+        /// <param name="modelState">ModelState con errores de validación</param>
+        /// <returns>BadRequestObjectResult con el formato ApiResponse</returns>
+        public static BadRequestObjectResult CreateValidationErrorResponse(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary modelState)
+        {
+            var errors = modelState
+                .Where(x => x.Value?.Errors.Count > 0)
+                .SelectMany(x => x.Value?.Errors ?? new Microsoft.AspNetCore.Mvc.ModelBinding.ModelErrorCollection())
+                .Select(x => x.ErrorMessage)
+                .ToList();
+
+            var message = errors.Any() ? string.Join("; ", errors) : "Datos de entrada inválidos";
+
+            return new BadRequestObjectResult(new ApiResponse<object>
+            {
+                ErrorCode = 400,
+                Message = message,
+                Data = null
+            });
         }
     }
 }

@@ -16,8 +16,8 @@ namespace AppCreditosBackEnd.Application.Interfaces
             Guid userId, 
             string action,
             string details,
-            ApplicationStatus? previousStatus = null,
-            ApplicationStatus? newStatus = null);
+            int? previousStatus = null,
+            int? newStatus = null);
             
         Task<List<AuditLogDto>> GetAllLogsAsync();
         

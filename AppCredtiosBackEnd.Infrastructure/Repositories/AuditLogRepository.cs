@@ -34,8 +34,6 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
         public async Task<List<AuditLog>> GetAllAsync()
         {
             return await _context.AuditLogs
-                .Include(a => a.CreditApplication)
-                .Include(a => a.User)
                 .OrderByDescending(a => a.Timestamp)
                 .ToListAsync();
         }
@@ -44,8 +42,6 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
         {
             return await _context.AuditLogs
                 .Where(a => a.CreditApplicationId == creditApplicationId)
-                .Include(a => a.CreditApplication)
-                .Include(a => a.User)
                 .OrderByDescending(a => a.Timestamp)
                 .ToListAsync();
         }
@@ -54,8 +50,6 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
         {
             return await _context.AuditLogs
                 .Where(a => a.UserId == userId)
-                .Include(a => a.CreditApplication)
-                .Include(a => a.User)
                 .OrderByDescending(a => a.Timestamp)
                 .ToListAsync();
         }
@@ -64,8 +58,6 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
         {
             return await _context.AuditLogs
                 .Where(a => a.Action == action)
-                .Include(a => a.CreditApplication)
-                .Include(a => a.User)
                 .OrderByDescending(a => a.Timestamp)
                 .ToListAsync();
         }
@@ -74,8 +66,6 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
         {
             return await _context.AuditLogs
                 .Where(a => a.Timestamp >= startDate && a.Timestamp <= endDate)
-                .Include(a => a.CreditApplication)
-                .Include(a => a.User)
                 .OrderByDescending(a => a.Timestamp)
                 .ToListAsync();
         }
@@ -87,8 +77,6 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
             
             // Aplicar paginación
             var logs = await _context.AuditLogs
-                .Include(a => a.CreditApplication)
-                .Include(a => a.User)
                 .OrderByDescending(a => a.Timestamp)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -101,14 +89,12 @@ namespace AppCreditosBackEnd.Infrastructure.Repositories
             int page, int pageSize, 
             int? creditApplicationId = null, 
             Guid? userId = null,
-            string action = null,
+            string? action = null,
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
             // Construir query base
-            IQueryable<AuditLog> query = _context.AuditLogs
-                .Include(a => a.CreditApplication)
-                .Include(a => a.User);
+            IQueryable<AuditLog> query = _context.AuditLogs;
             
             // Aplicar filtros condicionales
             if (creditApplicationId.HasValue)
