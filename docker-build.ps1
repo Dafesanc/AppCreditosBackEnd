@@ -37,7 +37,7 @@ docker run -d `
     --name $CONTAINER_NAME `
     -p "${PORT}:8080" `
     -e ASPNETCORE_ENVIRONMENT=Development `
-    -e "ConnectionStrings__DefaultConnection=Server=databasemain.cx20gk0oi9bt.us-east-2.rds.amazonaws.com,1433;Database=CreditsDatabase;User Id=dafesanc;Password=Dafesanc.1224+;Encrypt=true;" `
+    -e "ConnectionStrings__DefaultConnection=Server=databasemain.cx20gk0oi9bt.us-east-2.rds.amazonaws.com,1433;Database=CreditsDatabase;User Id=dafesanc;Password=Dafesanc.1224+;TrustServerCertificate=true;Encrypt=true;" `
     -e "JwtSettings__Secret=TXlTZWNyZXRLZXlGb3JKV1RUb2tlbkNyZWRpdFBsYXRmb3JtQXBp" `
     -e "JwtSettings__Issuer=CreditPlatformAPI" `
     -e "JwtSettings__Audience=CreditPlatformUsers" `

@@ -30,9 +30,7 @@ services:
         value: http://+:8080
       
       - key: ConnectionStrings__DefaultConnection
-        fromDatabase:
-          name: appcreditos-database
-          property: connectionString
+        value: "Server=databasemain.cx20gk0oi9bt.us-east-2.rds.amazonaws.com,1433;Database=CreditsDatabase;User Id=dafesanc;Password=Dafesanc.1224+;TrustServerCertificate=true;Encrypt=true;ConnectRetryCount=3;ConnectRetryInterval=5;"
       
       # JWT Settings - Usar secretos de Render
       - key: JwtSettings__Secret
